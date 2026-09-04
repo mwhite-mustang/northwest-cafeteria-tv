@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Northwest Cafeteria TV</title>
+
+<style>
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#000;
+}
+
+iframe{
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100vh;
+  border:0;
+}
+
+*{
+  cursor:none !important;
+}
+</style>
+</head>
+
+<body>
+
+<iframe
+src="https://docs.google.com/presentation/d/e/2PACX-1vT698DYok1BR2ppt5jvxMHcjFEZ4i6-mQ5rqxDbmdl0g4g5I2WHPGMb0i76voQH_w/embed?start=true&loop=true&delayms=3000"
+allow="autoplay; fullscreen"
+allowfullscreen>
+</iframe>
+
+<script>
+setTimeout(function(){
+  location.reload();
+}, 10 * 60 * 1000);
+
+let wakeLock = null;
+
+async function keepAwake(){
+  try{
+    if("wakeLock" in navigator){
+      wakeLock = await navigator.wakeLock.request("screen");
+    }
+  }catch(e){}
+}
+
+keepAwake();
+
+document.addEventListener("visibilitychange", function(){
+  if(document.visibilityState === "visible"){
+    keepAwake();
+  }
+});
+</script>
+
+</body>
+</html>
