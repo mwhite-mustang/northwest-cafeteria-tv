@@ -2,28 +2,111 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Northwest Cafeteria TV</title>
+
 <style>
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
-#screen{position:fixed;inset:0;width:100vw;height:100vh;object-fit:contain;background:#000}
-*{cursor:none!important}
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: contain;
+  background: #000;
+}
+
+* {
+  cursor: none !important;
+}
 </style>
 </head>
+
 <body>
-<img id="screen" alt="Northwest Cafeteria TV">
+
+<img
+  id="screen"
+  src="./slide-01.jpg"
+  alt="Northwest Cafeteria TV"
+>
+
 <script>
-const slides = Array.from({length:38},(_,i)=>`/slide-${String(i+1).padStart(2,'0')}.jpg`);
-const delay = 7000;
-let i=0, wakeLock=null;
-const screen=document.getElementById('screen');
-function show(){ screen.src=slides[i]+'?v=oct2026'; i=(i+1)%slides.length; }
-slides.forEach(src=>{const im=new Image(); im.src=src;});
-show(); setInterval(show,delay);
-async function keepAwake(){try{if('wakeLock' in navigator) wakeLock=await navigator.wakeLock.request('screen')}catch(e){}}
+const TOTAL_SLIDES = 38;
+const SLIDE_TIME = 7000;
+
+let currentSlide = 1;
+let wakeLock = null;
+
+const screen = document.getElementById("screen");
+
+function slideFile(number) {
+  return "./slide-" + String(number).padStart(2, "0") + ".jpg";
+}
+
+function showSlide(number) {
+  screen.src = slideFile(number) + "?v=october2026";
+}
+
+function nextSlide() {
+  currentSlide++;
+
+  if (currentSlide > TOTAL_SLIDES) {
+    currentSlide = 1;
+  }
+
+  showSlide(currentSlide);
+}
+
+/* Preload all slides */
+for (let n = 1; n <= TOTAL_SLIDES; n++) {
+  const image = new Image();
+  image.src = slideFile(n);
+}
+
+/* Start slideshow */
+showSlide(1);
+setInterval(nextSlide, SLIDE_TIME);
+
+/* Keep cafeteria TV awake */
+async function keepAwake() {
+  try {
+    if ("wakeLock" in navigator) {
+      wakeLock = await navigator.wakeLock.request("screen");
+    }
+  } catch (error) {
+    console.log("Wake lock unavailable.");
+  }
+}
+
 keepAwake();
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible') keepAwake();});
-setTimeout(()=>location.reload(),60*60*1000);
+
+document.addEventListener("visibilitychange", function() {
+  if (document.visibilityState === "visible") {
+    keepAwake();
+  }
+});
+
+/* Refresh once per hour */
+setTimeout(function() {
+  location.reload();
+}, 60 * 60 * 1000);
+
 </script>
+
 </body>
 </html>
