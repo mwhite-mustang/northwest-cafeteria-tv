@@ -4,61 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Northwest Cafeteria TV</title>
-
 <style>
-html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:#000;
-}
-
-iframe{
-  position:fixed;
-  inset:0;
-  width:100vw;
-  height:100vh;
-  border:0;
-}
-
-*{
-  cursor:none !important;
-}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
+#screen{position:fixed;inset:0;width:100vw;height:100vh;object-fit:contain;background:#000}
+*{cursor:none!important}
 </style>
 </head>
-
 <body>
-
-<iframe
-src="https://docs.google.com/presentation/d/e/2PACX-1vT698DYok1BR2ppt5jvxMHcjFEZ4i6-mQ5rqxDbmdl0g4g5I2WHPGMb0i76voQH_w/embed?start=true&loop=true&rm=minimal&delayms=5000"
-allow="autoplay; fullscreen"
-allowfullscreen>
-</iframe>
-
+<img id="screen" alt="Northwest Cafeteria TV">
 <script>
-setTimeout(function(){
-  location.reload();
-}, 10 * 60 * 1000);
-
-let wakeLock = null;
-
-async function keepAwake(){
-  try{
-    if("wakeLock" in navigator){
-      wakeLock = await navigator.wakeLock.request("screen");
-    }
-  }catch(e){}
-}
-
+const slides = Array.from({length:38},(_,i)=>`slides/slide-${String(i+1).padStart(2,'0')}.jpg`);
+const delay = 7000;
+let i=0, wakeLock=null;
+const screen=document.getElementById('screen');
+function show(){ screen.src=slides[i]+'?v=oct2026'; i=(i+1)%slides.length; }
+slides.forEach(src=>{const im=new Image(); im.src=src;});
+show(); setInterval(show,delay);
+async function keepAwake(){try{if('wakeLock' in navigator) wakeLock=await navigator.wakeLock.request('screen')}catch(e){}}
 keepAwake();
-
-document.addEventListener("visibilitychange", function(){
-  if(document.visibilityState === "visible"){
-    keepAwake();
-  }
-});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible') keepAwake();});
+setTimeout(()=>location.reload(),60*60*1000);
 </script>
-
 </body>
 </html>
